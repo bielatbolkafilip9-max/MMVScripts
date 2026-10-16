@@ -1,0 +1,250 @@
+-- ==========================================
+-- MMV ADVANCED OVERDRIVE-STYLE HUB (DELTA)
+-- ==========================================
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+
+-- Usunięcie starego GUI
+if CoreGui:FindFirstChild("MMV_ProHub") then
+    CoreGui.MMV_ProHub:Destroy()
+end
+
+-- Tworzenie głównego okna w stylu profesjonalnych hubów
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MMV_ProHub"
+ScreenGui.Parent = CoreGui
+ScreenGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 560, 0, 420)
+MainFrame.Position = UDim2.new(0.5, -280, 0.5, -210)
+MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = MainFrame
+
+-- Górny pasek
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 45)
+TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 8)
+TopCorner.Parent = TopBar
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -50, 1, 0)
+Title.Position = UDim2.new(0, 15, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "MMV Ultimate Hub | Delta Executor"
+Title.TextColor3 = Color3.fromRGB(0, 255, 170)
+Title.TextSize = 16
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 32, 0, 32)
+CloseBtn.Position = UDim2.new(1, -38, 0, 6)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Parent = TopBar
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 6)
+CloseCorner.Parent = CloseBtn
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Kontener na opcje (ScrollingFrame)
+local Container = Instance.new("ScrollingFrame")
+Container.Size = UDim2.new(1, -20, 1, -60)
+Container.Position = UDim2.new(0, 10, 0, 52)
+Container.BackgroundTransparency = 1
+Container.BorderSizePixel = 0
+Container.CanvasSize = UDim2.new(0, 0, 2.2, 0)
+Container.ScrollBarThickness = 4
+Container.Parent = MainFrame
+
+local UIList = Instance.new("UIListLayout")
+UIList.SortOrder = Enum.SortOrder.LayoutOrder
+UIList.Padding = UDim.new(0, 8)
+UIList.Parent = Container
+
+-- Funkcja do tworzenia sekcji tekstowych w menu
+local function createSectionHeader(text)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(1, 0, 0, 30)
+    lbl.BackgroundTransparency = 1
+    lbl.Text = "  " .. text
+    lbl.TextColor3 = Color3.fromRGB(150, 160, 180)
+    lbl.TextSize = 13
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = Container
+end
+
+-- Funkcja do tworzenia zaawansowanych przycisków
+local function createButton(text, color, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 0, 38)
+    btn.BackgroundColor3 = color or Color3.fromRGB(35, 35, 45)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 13
+    btn.Font = Enum.Font.GothamMedium
+    btn.Parent = Container
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+    
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- Funkcja wysyłania komend czatu
+local function sendChatCommand(cmd)
+    pcall(function()
+        if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+            local channel = TextChatService.ChatChannels:FindFirstChild("RBXGeneral")
+            if channel then channel:SendAsync(cmd) end
+        else
+            local sayMessageRequest = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents") 
+                and ReplicatedStorage.DefaultChatSystemChatEvents:FindFirstChild("SayMessageRequest")
+            if sayMessageRequest then sayMessageRequest:FireServer(cmd, "All") end
+        end
+    end)
+end
+
+----------------------------------------------------
+-- WYPEŁNIENIE MENU (WSZYSTKIE FUNKCJE ZE ZDJĘĆ I POPRZEDNIO ORAZ GITHUB)
+----------------------------------------------------
+
+createSectionHeader("--- 1. COMBAT & BOMB JUMP (GITHUB) ---")
+
+createButton("🚀 Load Bomb Jump Script (GitHub)", Color3.fromRGB(120, 40, 180), function()
+    pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/aux0on/jaigbj/refs/heads/main/.lua"))()
+    end)
+end)
+
+createButton("🎯 Gun Custom Target (Lock Murderer)", Color3.fromRGB(180, 50, 80), function()
+    task.spawn(function()
+        while true do
+            pcall(function()
+                local camera = workspace.CurrentCamera
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Gun") then
+                    for _, p in ipairs(Players:GetPlayers()) do
+                        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                            if p.Character:FindFirstChild("Knife") or p:GetAttribute("Role") == "Murderer" then
+                                camera.CFrame = CFrame.new(camera.CFrame.Position, p.Character.HumanoidRootPart.Position)
+                            end
+                        end
+                    end
+                end
+            end)
+            task.wait(0.05)
+        end
+    end)
+end)
+
+createSectionHeader("--- 2. MMV COMMAND AUTOMATION ---")
+
+createButton("📍 Auto Send /map Milbase (Loop)", Color3.fromRGB(40, 130, 70), function()
+    task.spawn(function()
+        while true do
+            sendChatCommand("/map Milbase")
+            task.wait(5)
+        end
+    end)
+end)
+
+createButton("👑 Set My Username as Sheriff (/sheriff)", Color3.fromRGB(180, 120, 20), function()
+    sendChatCommand("/sheriff " .. LocalPlayer.Name)
+end)
+
+createButton("🗡️ Set My Username as Murderer (/murderer)", Color3.fromRGB(180, 40, 40), function()
+    sendChatCommand("/murderer " .. LocalPlayer.Name)
+end)
+
+createSectionHeader("--- 3. VISUALS, ESP & HIGHLIGHTS ---")
+
+createButton("👁️ Highlight Murderer & Sheriff Only", Color3.fromRGB(60, 60, 90), function()
+    pcall(function()
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character then
+                local hl = Instance.new("Highlight")
+                hl.Adornee = p.Character
+                hl.FillColor = Color3.fromRGB(255, 0, 0)
+                hl.Parent = p.Character
+            end
+        end
+    end)
+end)
+
+createButton("📦 Highlight Traps & Bombs (ESP)", Color3.fromRGB(90, 80, 40), function()
+    pcall(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name:lower():find("trap") or obj.Name:lower():find("bomb") then
+                if obj:IsA("Model") or obj:IsA("BasePart") then
+                    local hl = Instance.new("Highlight")
+                    hl.Adornee = obj
+                    hl.FillColor = Color3.fromRGB(255, 255, 0)
+                    hl.Parent = obj
+                end
+            end
+        end
+    end)
+end)
+
+createSectionHeader("--- 4. SELF MODS & GAME CONTROLS ---")
+
+createButton("⚡ Enable Speed (WalkSpeed 24 / Jump 80)", Color3.fromRGB(35, 110, 160), function()
+    pcall(function()
+        local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = 24
+            hum.UseJumpPower = true
+            hum.JumpPower = 80
+        end
+    end)
+end)
+
+createButton("💀 Reset Character", Color3.fromRGB(160, 90, 20), function()
+    pcall(function()
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+            LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health = 0
+        end
+    end)
+end)
+
+createButton("🔄 Rejoin Server", Color3.fromRGB(30, 100, 150), function()
+    pcall(function()
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+    end)
+end)
+
+createButton("🚪 Leave Game", Color3.fromRGB(150, 40, 40), function()
+    pcall(function()
+        game:GetService("CoreGui"):FindFirstChild("RobloxGui"):Destroy()
+        game:Shutdown()
+    end)
+end)
